@@ -1,0 +1,14 @@
+# MLflow local tracking — jangan di-commit, path absolut berbeda di tiap mesin
+mlruns/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Environment files
+.env
+*.env
+
+# Run ID output (di-generate ulang tiap CI run)
+run_id.txt
