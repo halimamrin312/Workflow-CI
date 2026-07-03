@@ -52,7 +52,8 @@ jobs:
         MLFLOW_PYTHON_VERSION: "3.12"
       run: |
         # Buat Docker Image dari run lokal
-        mlflow models build-docker -m ${{ env.ARTIFACT_PATH }} -n ${{ secrets.DOCKERHUB_USERNAME }}/wine-quality-model:latest --enable-mlserver
+        # --enable-mlserver dihapus karena memaksa Ubuntu 20.04 (EOL) sebagai base image
+        mlflow models build-docker -m ${{ env.ARTIFACT_PATH }} -n ${{ secrets.DOCKERHUB_USERNAME }}/wine-quality-model:latest --env-manager=local
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
