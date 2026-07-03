@@ -13,7 +13,12 @@ def train_model(n_estimators, max_depth, min_samples_split):
     # 1. Cek apakah berjalan di dalam konteks "mlflow run"
     env_run_id = os.environ.get("MLFLOW_RUN_ID")
     is_in_mlflow_run = env_run_id is not None
-    
+
+    # Selalu set tracking URI ke path relatif terlebih dahulu agar artifact
+    # disimpan di direktori kerja runner (bukan path absolut mesin lokal).
+    # Ini penting ketika berjalan di GitHub Actions via "mlflow run .".
+    mlflow.set_tracking_uri("file:./mlruns")
+
     if not is_in_mlflow_run:
         # Konfigurasi DagsHub MLflow Tracking jika kredensial tersedia
         dagshub_username = os.environ.get("DAGSHUB_USERNAME")
@@ -28,7 +33,6 @@ def train_model(n_estimators, max_depth, min_samples_split):
             mlflow.set_experiment("Wine-Quality-Retraining-CI")
         else:
             print("No DagsHub credentials found. Logging to local mlruns...")
-            mlflow.set_tracking_uri("file:./mlruns")
             mlflow.set_experiment("Wine-Quality-Retraining-Local")
         
     # 2. Memuat dataset preprocessing

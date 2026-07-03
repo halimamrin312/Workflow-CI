@@ -27,26 +27,32 @@ jobs:
 
     - name: Run retraining using MLflow Project
       run: |
-        # Jalankan secara lokal agar mlruns tersimpan di runner lokal
-        mlflow run . --env-manager=local -P n_estimators=100 -P max_depth=10 -P min_samples_split=5
+        # Jalankan secara lokal agar mlruns tersimpan di direktori kerja runner
+        MLFLOW_TRACKING_URI=file:./mlruns mlflow run . --env-manager=local -P n_estimators=100 -P max_depth=10 -P min_samples_split=5
 
-    - name: Read Run ID
+    - name: Read Run ID and resolve artifact path
       id: get-run-id
       run: |
         RUN_ID=$(cat run_id.txt)
         echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
         echo "Detected Run ID: $RUN_ID"
+        # Cari experiment folder yang berisi run ini (bisa bukan "0")
+        ARTIFACT_PATH=$(find mlruns -type d -name "$RUN_ID" | head -1)
+        echo "ARTIFACT_PATH=$ARTIFACT_PATH/artifacts/model" >> $GITHUB_ENV
+        echo "Artifact path: $ARTIFACT_PATH/artifacts/model"
 
     - name: Upload MLflow artifacts to GitHub Run
       uses: actions/upload-artifact@v4
       with:
         name: trained-model-artifacts
-        path: mlruns/0/${{ env.RUN_ID }}/artifacts/model/
+        path: ${{ env.ARTIFACT_PATH }}
 
     - name: Build Docker Image using mlflow models build-docker
+      env:
+        MLFLOW_PYTHON_VERSION: "3.12"
       run: |
         # Buat Docker Image dari run lokal
-        mlflow models build-docker -m mlruns/0/${{ env.RUN_ID }}/artifacts/model -n ${{ secrets.DOCKERHUB_USERNAME }}/wine-quality-model:latest --enable-mlserver
+        mlflow models build-docker -m ${{ env.ARTIFACT_PATH }} -n ${{ secrets.DOCKERHUB_USERNAME }}/wine-quality-model:latest --enable-mlserver
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
