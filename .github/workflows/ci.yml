@@ -1,0 +1,59 @@
+name: Model Retraining and Deployment CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  retrain-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install mlflow==2.19.0 pandas numpy scikit-learn joblib dagshub python-dotenv
+
+    - name: Run retraining using MLflow Project
+      run: |
+        # Jalankan secara lokal agar mlruns tersimpan di runner lokal
+        mlflow run . --env-manager=local -P n_estimators=100 -P max_depth=10 -P min_samples_split=5
+
+    - name: Read Run ID
+      id: get-run-id
+      run: |
+        RUN_ID=$(cat run_id.txt)
+        echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+        echo "Detected Run ID: $RUN_ID"
+
+    - name: Upload MLflow artifacts to GitHub Run
+      uses: actions/upload-artifact@v4
+      with:
+        name: trained-model-artifacts
+        path: mlruns/0/${{ env.RUN_ID }}/artifacts/model/
+
+    - name: Build Docker Image using mlflow models build-docker
+      run: |
+        # Buat Docker Image dari run lokal
+        mlflow models build-docker -m mlruns/0/${{ env.RUN_ID }}/artifacts/model -n ${{ secrets.DOCKERHUB_USERNAME }}/wine-quality-model:latest --enable-mlserver
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Push Docker Image to Docker Hub
+      run: |
+        docker push ${{ secrets.DOCKERHUB_USERNAME }}/wine-quality-model:latest

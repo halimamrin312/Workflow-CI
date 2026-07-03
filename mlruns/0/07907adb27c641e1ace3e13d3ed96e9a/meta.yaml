@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tdr-5000/Documents/mlOps/Workflow-CI/mlruns/0/07907adb27c641e1ace3e13d3ed96e9a/artifacts
+end_time: 1783071572128
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 07907adb27c641e1ace3e13d3ed96e9a
+run_name: placid-shad-443
+run_uuid: 07907adb27c641e1ace3e13d3ed96e9a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1783071559802
+status: 4
+tags: []
+user_id: tdr-5000

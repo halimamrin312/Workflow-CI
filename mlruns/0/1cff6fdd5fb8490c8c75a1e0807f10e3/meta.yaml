@@ -1,0 +1,15 @@
+artifact_uri: file:///home/tdr-5000/Documents/mlOps/Workflow-CI/mlruns/0/1cff6fdd5fb8490c8c75a1e0807f10e3/artifacts
+end_time: 1783071536983
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 1cff6fdd5fb8490c8c75a1e0807f10e3
+run_name: monumental-crab-170
+run_uuid: 1cff6fdd5fb8490c8c75a1e0807f10e3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1783071532338
+status: 4
+tags: []
+user_id: tdr-5000

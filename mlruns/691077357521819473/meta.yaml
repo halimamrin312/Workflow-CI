@@ -1,0 +1,6 @@
+artifact_location: file:///home/tdr-5000/Documents/mlOps/Workflow-CI/mlruns/691077357521819473
+creation_time: 1783071536214
+experiment_id: '691077357521819473'
+last_update_time: 1783071536214
+lifecycle_stage: active
+name: Wine-Quality-Retraining-Local

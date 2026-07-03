@@ -1,0 +1,13 @@
+name: wine-quality
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip:
+      - mlflow==2.19.0
+      - pandas
+      - numpy
+      - scikit-learn
+      - joblib
+      - dagshub
+      - python-dotenv
